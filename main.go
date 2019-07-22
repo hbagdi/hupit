@@ -11,6 +11,10 @@ import (
 	"syscall"
 )
 
+// VERSION is the current version of hupit.
+// This should be substituted by git tag during the build process.
+var VERSION = "dev"
+
 type files []string
 
 func (f *files) String() string {
@@ -25,12 +29,18 @@ func (f *files) Set(value string) error {
 func main() {
 	var command string
 	var filesToWatch files
+	var version bool
 	flag.StringVar(&command, "command", "",
 		"command to execute when a file changes")
 	flag.Var(&filesToWatch, "file", "file to watch for changes;"+
 		"flag can be used multiple times to specify multiple files")
+	flag.BoolVar(&version, "version", false, "output version information")
 	flag.Parse()
 
+	if version {
+		fmt.Println("hupit", VERSION)
+		return
+	}
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
