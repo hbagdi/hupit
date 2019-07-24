@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -24,6 +25,15 @@ func (f *files) String() string {
 func (f *files) Set(value string) error {
 	*f = append(*f, value)
 	return nil
+}
+
+func healthServer() {
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		return
+	})
+	// TODO shutdown health server gracefully
+	// ignore error
+	http.ListenAndServe(":8042", nil)
 }
 
 func main() {
@@ -56,6 +66,8 @@ func main() {
 
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM)
+
+	go healthServer()
 
 	for {
 		select {
