@@ -32,8 +32,7 @@ func healthServer() {
 		return
 	})
 	// TODO shutdown health server gracefully
-	// ignore error
-	http.ListenAndServe(":8042", nil)
+	log.Fatalln(http.ListenAndServe(":8042", nil))
 }
 
 func main() {
